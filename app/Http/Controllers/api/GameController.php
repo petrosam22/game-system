@@ -7,46 +7,26 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
+
     public function getGameTurns(Request $request)
     {
-        $numPlayers = $request->input('numPlayers', 3);
-        $numTurns = $request->input('numTurns', 3);
-        $startPlayer = $request->input('startPlayer', 'A');
+        $playersCount = $request->get('players', 3);
+        $turnsCount = $request->get('turns', 3);
+        $startPlayerIndex = $request->get('start', 1);
 
         $players = range('A', 'Z');
-        $playerCount = count($players);
-        $startIndex = array_search($startPlayer, $players);
+        $players = array_slice($players, 0, $playersCount);
 
-        $gameTurns = [];
-        $reverseOrder = false;
-
-        for ($i = 0; $i < $numTurns; $i++) {
-            $gameTurn = [];
-
-            for ($j = 0; $j < $numPlayers; $j++) {
-                $playerIndex = ($startIndex + $j) % $playerCount;
-                $gameTurn[] = $players[$playerIndex];
-            }
-
-            $gameTurns[] = $gameTurn;
-
-            if ($reverseOrder) {
-                $startIndex--;
-                if ($startIndex < 0) {
-                    $startIndex = $playerCount - 1;
-                }
+        $turns = [];
+        for ($i = 0; $i < $turnsCount; $i++) {
+            $start = ($startPlayerIndex + $i) % $playersCount;
+            if ($i % 2 == 0) {
+                $turns[] = array_merge(array_slice($players, $start), array_slice($players, 0, $start));
             } else {
-                $startIndex++;
-                if ($startIndex >= $playerCount) {
-                    $startIndex = 0;
-                }
+                $turns[] = array_reverse(array_merge(array_slice($players, $start), array_slice($players, 0, $start)));
             }
-
-            $reverseOrder = !$reverseOrder;
         }
 
-        return response()->json($gameTurns);
+        return response()->json($turns);
     }
-
-
 }
