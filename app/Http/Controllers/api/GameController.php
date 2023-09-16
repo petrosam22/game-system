@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class GameController extends Controller
 {
 
-    // public function getGameTurns(Request $request)
+     
     public function getGameTurns(Request $request, $players = 3, $turns = 3)
 
     {
