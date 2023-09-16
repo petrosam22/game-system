@@ -12,7 +12,7 @@ class GameController extends Controller
     {
         $playersCount = $request->get('players', 3);
         $turnsCount = $request->get('turns', 3);
-        $startPlayerIndex = $request->get('start', 1);
+        $startPlayerIndex = $request->get('start', 1) - 1;
 
         $players = range('A', 'Z');
         $players = array_slice($players, 0, $playersCount);
@@ -20,13 +20,10 @@ class GameController extends Controller
         $turns = [];
         for ($i = 0; $i < $turnsCount; $i++) {
             $start = ($startPlayerIndex + $i) % $playersCount;
-            if ($i % 2 == 0) {
-                $turns[] = array_merge(array_slice($players, $start), array_slice($players, 0, $start));
-            } else {
-                $turns[] = array_reverse(array_merge(array_slice($players, $start), array_slice($players, 0, $start)));
-            }
+            $turns[] = array_merge(array_slice($players, $start), array_slice($players, 0, $start));
         }
 
         return response()->json($turns);
     }
+
 }
